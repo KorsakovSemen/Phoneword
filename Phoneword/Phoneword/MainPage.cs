@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace Phoneword
@@ -43,21 +44,52 @@ namespace Phoneword
                 IsEnabled = false,
             });
             translateButton.Clicked += OnTranslate;
+            callButton.Clicked += OnCall;
             this.Content = panel;
+        }
+
+        async private void OnCall(object sender, EventArgs e)
+        {
+            if (await this.DisplayAlert(
+                "Dial a Number",
+                "Would you like to call " + translatedNumber + "?",
+                "Yep",
+                "Nope"))
+            {
+                try
+                {
+                    PhoneDialer.Open(translatedNumber);
+                }
+                catch (ArgumentNullException)
+                {
+                    await DisplayAlert("Unable to dial", "Phone number was not valid.", "OK");
+                }
+                catch (FeatureNotSupportedException)
+                {
+                    await DisplayAlert("Unable to dial", "Phone dialing not supported.", "OK");
+                }
+                catch (Exception)
+                {
+                    // Other error has occurred.
+                    await DisplayAlert("Unable to dial", "Phone dialing failed.", "OK");
+                }
+            }
         }
 
         private void OnTranslate(object sender, EventArgs e)
         {
             string enteredNumber = phoneNumberText.Text;
-            translatedNumber = Core.PhonewordTranslator.ToNumber(enteredNumber);
+            translatedNumber = enteredNumber + "1";
 
             if (!string.IsNullOrEmpty(translatedNumber))
             {
-                // TODO:
+                callButton.IsEnabled = true;
+                callButton.Text = "Call " + translatedNumber;
             }
             else
             {
-                // TODO:
+                callButton.IsEnabled = false;
+                callButton.Text = "Call";
             }
         }
 
