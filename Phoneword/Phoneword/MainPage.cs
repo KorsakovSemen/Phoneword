@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Phoneword.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Xamarin.Essentials;
@@ -79,7 +80,7 @@ namespace Phoneword
         private void OnTranslate(object sender, EventArgs e)
         {
             string enteredNumber = phoneNumberText.Text;
-            translatedNumber = enteredNumber + "1";
+            translatedNumber = PhonewordTranslator.ToNumber(enteredNumber);
 
             if (!string.IsNullOrEmpty(translatedNumber))
             {
